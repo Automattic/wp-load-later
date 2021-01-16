@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP Load Later
  * Plugin URI: https://github.com/Automattic/wp-load-later
- * Version: 00.01.00
+ * Version: 00.02.00
  * License: GPLv2 or later
  */
 
