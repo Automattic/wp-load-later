@@ -70,3 +70,5 @@ class WP_Load_Later {
 		return $escaped;
 	}
 }
+
+WP_Load_Later::init();
