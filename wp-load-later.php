@@ -8,18 +8,9 @@
 
 class WP_Load_Later {
 	private static $deferred_js = [];
-	private static $after_load_js = [];
-	private static $after_load_css = [];
 
-	/**
-	 * Call this to load a JS resource after the load event fires.
-	 *
-	 * @param string $url
-	 * @param array $attributes key/value pairs
-	 */
-	public static function after_load_js( $url, $attributes = [] ) {
-		self::$after_load_js[ $url ] = $attributes;
-	}
+	private static $after_load_css = [];
+	private static $after_load_js = [];
 
 	/**
 	 * Call this to load a CSS resource after the load event fires.
@@ -29,6 +20,16 @@ class WP_Load_Later {
 	 */
 	public static function after_load_css( $url, $attributes = [] ) {
 		self::$after_load_css[ $url ] = $attributes;
+	}
+
+	/**
+	 * Call this to load a JS resource after the load event fires.
+	 *
+	 * @param string $url
+	 * @param array $attributes key/value pairs
+	 */
+	public static function after_load_js( $url, $attributes = [] ) {
+		self::$after_load_js[ $url ] = $attributes;
 	}
 
 	/**
@@ -100,14 +101,6 @@ window.addEventListener( 'load', function( event ) {
 	}
 
 	try {
-		var js = JSON.parse( '$js' );
-		for ( var url in js ) {
-			var script = document.createElement( 'script' );
-			script.src = url;
-
-			appendToDoc( script, js[url] );
-		}
-
 		var css = JSON.parse( '$css' );
 		for ( var url in css ) {
 			var link = document.createElement( 'link' );
@@ -116,6 +109,14 @@ window.addEventListener( 'load', function( event ) {
 			link.rel = 'stylesheet';
 
 			appendToDoc( link, css[url] );
+		}
+
+		var js = JSON.parse( '$js' );
+		for ( var url in js ) {
+			var script = document.createElement( 'script' );
+			script.src = url;
+
+			appendToDoc( script, js[url] );
 		}
 	} catch( e ) {
 		console.log( 'WP_Load_Later: add_after_load failure', e );
