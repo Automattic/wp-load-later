@@ -9,15 +9,26 @@
 class WP_Load_Later {
 	private static $deferred_js = [];
 	private static $after_load_js = [];
+	private static $after_load_css = [];
 
 	/**
-	 * Call this to load a JS resource after the load event fires
+	 * Call this to load a JS resource after the load event fires.
 	 *
 	 * @param string $url
 	 * @param array $attributes key/value pairs
 	 */
 	public static function after_load_js( $url, $attributes = [] ) {
 		self::$after_load_js[ $url ] = $attributes;
+	}
+
+	/**
+	 * Call this to load a CSS resource after the load event fires.
+	 *
+	 * @param string $url
+	 * @param array $attributes key/value pairs
+	 */
+	public static function after_load_css( $url, $attributes = [] ) {
+		self::$after_load_css[ $url ] = $attributes;
 	}
 
 	/**
@@ -64,11 +75,15 @@ class WP_Load_Later {
 	 * Inject resources to be loaded after the load event fires
 	 */
 	public static function _inject_after_load() {
-		if ( count( self::$after_load_js ) < 1 ) {
+		if (
+			count( self::$after_load_js ) < 1
+			&& count( self::$after_load_css ) < 1
+		) {
 			return;
 		}
 
 		$js = wp_json_encode( self::_escape_all( self::$after_load_js ) );
+		$css = wp_json_encode( self::_escape_all( self::$after_load_css ) );
 
 		$out = <<<HTML
 <script>
@@ -91,6 +106,16 @@ window.addEventListener( 'load', function( event ) {
 			script.src = url;
 
 			appendToDoc( script, js[url] );
+		}
+
+		var css = JSON.parse( '$css' );
+		for ( var url in css ) {
+			var link = document.createElement( 'link' );
+			link.href = url;
+			link.type = 'text/css';
+			link.rel = 'stylesheet';
+
+			appendToDoc( link, css[url] );
 		}
 	} catch( e ) {
 		console.log( 'WP_Load_Later: add_after_load failure', e );
