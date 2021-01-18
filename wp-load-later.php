@@ -52,7 +52,7 @@ class WP_Load_Later {
 	public static function init() {
 		add_action( 'wp_footer', [ 'WP_Load_Later', '_inject_deferred_js' ], 99999 );
 		add_action( 'wp_footer', [ 'WP_Load_Later', '_inject_after_load' ], 99999 );
-    }
+	}
 
 	/************************/
 	/*** Internal Methods ***/
